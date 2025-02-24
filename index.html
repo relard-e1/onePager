@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF zu CSV Konverter</title>
+    <title>PDF to CSV Converter</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
     <div class="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full text-center">
-        <img src="https://ebene1.eu/wp-content/uploads/2024/07/E1-New-Logo_Bildzeichen.webp" alt="Ebene1 Logo" class="mx-auto w-24 h-auto mb-4">
+        <img src="https://ebene1.eu/wp-content/uploads/2024/07/E1-New-Logo_Bildzeichen.webp" alt="Ebene1 Logo" class="mx-auto w-16 h-auto mb-4">
         
-        <h1 class="text-2xl font-bold text-gray-800">PDF zu CSV Konverter</h1>
-        <p class="text-gray-600 mt-2">Lade eine PDF hoch und erhalte eine CSV-Datei zurück.</p>
+        <h1 class="text-2xl font-bold text-gray-800">PDF to CSV Converter</h1>
+        <p class="text-gray-600 mt-2">Upload a PDF file and receive a CSV file in return.</p>
 
         <div class="mt-6 text-left">
-            <label class="block text-gray-700 font-semibold">PDF-Datei hochladen:</label>
+            <label class="block text-gray-700 font-semibold">Upload PDF file:</label>
             <input type="file" id="fileInput" class="w-full mt-2 p-2 border border-gray-300 rounded-md">
         </div>
 
-        <button id="uploadBtn" class="w-full mt-4 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
-            Datei hochladen & Konvertieren
+        <button id="uploadBtn" class="w-full mt-4 bg-[#FF0100] text-white py-2 px-4 rounded-md hover:bg-red-600 transition">
+            Upload & Convert File
         </button>
 
         <div id="statusMessage" class="mt-4 text-gray-600 hidden"></div>
 
         <a id="downloadLink" class="hidden mt-4 w-full block text-center bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition">
-            CSV herunterladen
+            Download CSV
         </a>
     </div>
 
@@ -35,54 +35,54 @@
             const fileInput = document.getElementById("fileInput");
             const statusMessage = document.getElementById("statusMessage");
             const downloadLink = document.getElementById("downloadLink");
-    
+
             if (!fileInput.files.length) {
-                statusMessage.textContent = "Bitte eine Datei auswählen!";
+                statusMessage.textContent = "Please select a file!";
                 statusMessage.classList.remove("hidden");
                 statusMessage.classList.add("text-red-500");
                 return;
             }
-    
-            statusMessage.textContent = "Datei wird hochgeladen...";
+
+            statusMessage.textContent = "Uploading file...";
             statusMessage.classList.remove("hidden", "text-red-500");
             statusMessage.classList.add("text-blue-500");
-    
+
             const formData = new FormData();
             formData.append("file", fileInput.files[0]);
-    
+
             try {
                 const response = await fetch("https://e1-converter.onrender.com/process-pdf/", {
                     method: "POST",
                     body: formData
                 });
-    
+
                 const result = await response.json();
                 if (result.csv_url) {
-                    statusMessage.textContent = "Konvertierung erfolgreich!";
+                    statusMessage.textContent = "Conversion successful!";
                     statusMessage.classList.add("text-green-500");
                     downloadLink.href = result.csv_url;
                     downloadLink.classList.remove("hidden");
-    
-                    // Nach erfolgreichem Upload: Reset für neuen Upload
-                    document.getElementById("fileInput").value = ""; // Datei-Input leeren
-    
+
+                    // Reset input after successful upload
+                    fileInput.value = "";
+
+                    // Reset UI after download
                     downloadLink.addEventListener("click", function() {
                         setTimeout(() => {
                             statusMessage.textContent = "";
                             statusMessage.classList.add("hidden");
                             downloadLink.classList.add("hidden");
-                        }, 1000);
+                        }, 2000);
                     });
                 } else {
-                    throw new Error("Fehler bei der Verarbeitung.");
+                    throw new Error("Error processing file.");
                 }
             } catch (error) {
-                statusMessage.textContent = "Fehler: " + error.message;
+                statusMessage.textContent = "Error: " + error.message;
                 statusMessage.classList.add("text-red-500");
             }
         });
     </script>
-    
 
 </body>
 </html>
