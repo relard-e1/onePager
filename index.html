@@ -4,36 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF zu CSV Konverter</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        #download-link { display: none; margin-top: 20px; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-    <h2>PDF zu CSV Konverter</h2>
-    <input type="file" id="file-input" accept=".pdf">
-    <button onclick="uploadFile()">Hochladen & Konvertieren</button>
+    <div class="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
+        <h1 class="text-2xl font-bold text-center text-gray-800">PDF zu CSV Konverter</h1>
+        <p class="text-center text-gray-600 mt-2">Lade eine PDF hoch und erhalte eine CSV-Datei zurück.</p>
 
-    <div id="status"></div>
-    <a id="download-link" href="#" download>CSV herunterladen</a>
+        <div class="mt-6">
+            <label class="block text-gray-700 font-semibold">PDF-Datei hochladen:</label>
+            <input type="file" id="fileInput" class="w-full mt-2 p-2 border border-gray-300 rounded-md">
+        </div>
+
+        <button id="uploadBtn" class="w-full mt-4 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
+            Datei hochladen & Konvertieren
+        </button>
+
+        <div id="statusMessage" class="mt-4 text-center text-gray-600 hidden"></div>
+
+        <a id="downloadLink" class="hidden mt-4 w-full block text-center bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition">
+            CSV herunterladen
+        </a>
+    </div>
 
     <script>
-        async function uploadFile() {
-            const fileInput = document.getElementById("file-input");
-            const statusDiv = document.getElementById("status");
-            const downloadLink = document.getElementById("download-link");
+        document.getElementById("uploadBtn").addEventListener("click", async function() {
+            const fileInput = document.getElementById("fileInput");
+            const statusMessage = document.getElementById("statusMessage");
+            const downloadLink = document.getElementById("downloadLink");
 
             if (!fileInput.files.length) {
-                alert("Bitte eine PDF-Datei auswählen.");
+                statusMessage.textContent = "Bitte eine Datei auswählen!";
+                statusMessage.classList.remove("hidden");
+                statusMessage.classList.add("text-red-500");
                 return;
             }
 
+            statusMessage.textContent = "Datei wird hochgeladen...";
+            statusMessage.classList.remove("hidden", "text-red-500");
+            statusMessage.classList.add("text-blue-500");
+
             const formData = new FormData();
             formData.append("file", fileInput.files[0]);
-
-            statusDiv.innerHTML = "⏳ Datei wird hochgeladen...";
-            downloadLink.style.display = "none";
 
             try {
                 const response = await fetch("https://e1-converter.onrender.com/process-pdf/", {
@@ -42,17 +55,19 @@
                 });
 
                 const result = await response.json();
-                if (response.ok) {
-                    statusDiv.innerHTML = "✅ Konvertierung erfolgreich!";
+                if (result.csv_url) {
+                    statusMessage.textContent = "Konvertierung erfolgreich!";
+                    statusMessage.classList.add("text-green-500");
                     downloadLink.href = result.csv_url;
-                    downloadLink.style.display = "block";
+                    downloadLink.classList.remove("hidden");
                 } else {
-                    statusDiv.innerHTML = "❌ Fehler: " + (result.error || "Unbekannter Fehler");
+                    throw new Error("Fehler bei der Verarbeitung.");
                 }
             } catch (error) {
-                statusDiv.innerHTML = "❌ Fehler: Server nicht erreichbar.";
+                statusMessage.textContent = "Fehler: " + error.message;
+                statusMessage.classList.add("text-red-500");
             }
-        }
+        });
     </script>
 
 </body>
