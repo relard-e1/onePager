@@ -6,9 +6,9 @@
     <title>PDF to CSV Converter</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
 
-    <div class="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full text-center">
+    <div class="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full text-center mx-4">
         <img src="https://ebene1.eu/wp-content/uploads/2024/07/E1-New-Logo_Bildzeichen.webp" alt="Ebene1 Logo" class="mx-auto w-16 h-auto mb-4">
         
         <h1 class="text-2xl font-bold text-gray-800">PDF to CSV Converter</h1>
@@ -63,16 +63,15 @@
                     downloadLink.href = result.csv_url;
                     downloadLink.classList.remove("hidden");
 
-                    // Reset input after successful upload
+                    // Reset file input after successful upload
                     fileInput.value = "";
 
-                    // Reset UI after download
                     downloadLink.addEventListener("click", function() {
                         setTimeout(() => {
                             statusMessage.textContent = "";
                             statusMessage.classList.add("hidden");
                             downloadLink.classList.add("hidden");
-                        }, 2000);
+                        }, 1000);
                     });
                 } else {
                     throw new Error("Error processing file.");
